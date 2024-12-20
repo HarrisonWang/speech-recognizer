@@ -4,7 +4,6 @@
   "description": "科大讯飞语音识别库",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
   "keywords": ["科大讯飞", "语音识别", "语音转写", "语音转写库", "语音识别库", "语音转写服务", "语音识别服务"],
