@@ -1,12 +1,35 @@
 {
   "name": "xunfei-iat",
   "version": "1.0.0",
-  "description": "",
+  "description": "科大讯飞语音识别库",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": ["科大讯飞", "语音识别", "语音转写", "语音转写库", "语音识别库", "语音转写服务", "语音识别服务"],
+  "author": "Harrison Wang",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HarrisonWang/xunfei-iat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HarrisonWang/xunfei-iat/issues"
+  },
+  "homepage": "https://github.com/HarrisonWang/xunfei-iat",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "worker-loader": "^3.0.8"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  }
 }

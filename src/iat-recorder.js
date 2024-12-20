@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { DEFAULT_CONFIG } from './constants';
+import Worker from './audio-transcoder.worker.js';
 
 export class IatRecorder {
     constructor(opts = {}) {
@@ -21,6 +22,7 @@ export class IatRecorder {
         // 回调方法
         this.onTextChange = this.config.onTextChange || Function();
         this.onWillStatusChange = this.config.onWillStatusChange || Function();
+        this.onFinalResult = this.config.onFinalResult || Function();
 
         // 状态相关
         this.status = 'null';
@@ -63,11 +65,7 @@ export class IatRecorder {
         }
 
         // 初始化 Web Worker
-        const workerBlob = new Blob([
-            `importScripts('${new URL('./audio-transcoder.js', import.meta.url)}');`
-        ], { type: 'application/javascript' });
-        
-        this.webWorker = new Worker(URL.createObjectURL(workerBlob));
+        this.webWorker = new Worker();
         this.webWorker.onmessage = (event) => {
             this.audioData.push(...event.data);
         };
@@ -260,7 +258,7 @@ export class IatRecorder {
             let str = '';
             const ws = data.ws;
             for (let i = 0; i < ws.length; i++) {
-                str = str + ws[i].cw[0].w;
+                str += ws[i].cw[0].w;
             }
             
             if (data.pgs) {
@@ -280,6 +278,7 @@ export class IatRecorder {
         }
         
         if (jsonData.code === 0 && jsonData.data.status === 2) {
+            this.onFinalResult(this.resultTextTemp);
             this.webSocket.close();
         }
         if (jsonData.code !== 0) {
