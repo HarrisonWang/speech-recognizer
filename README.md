@@ -1,4 +1,4 @@
-# xunfei-iat
+# speech-recognizer
 
 一个基于科大讯飞语音听写（流式版）WebAPI 的语音识别库，支持实时语音转文字功能。该库提供了 WebSocket 连接和音频处理的完整实现，方便开发者快速集成语音识别功能。
 
