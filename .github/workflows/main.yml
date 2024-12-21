@@ -29,21 +29,6 @@ jobs:
       - name: Build
         run: npm run build
       
-      - name: Update package version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          npm version $VERSION --no-git-tag-version
-      
-      - name: Commit package.json changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add package.json package-lock.json
-          git commit -m "🐳 chore: update version to ${GITHUB_REF#refs/tags/v} [skip ci]"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - name: Publish to NPM
         run: npm publish
         env:
