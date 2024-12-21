@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { DEFAULT_CONFIG } from './constants';
-import Worker from './audio-transcoder.worker.js';
+import Worker from 'web-worker:./audio-transcoder-worker.js';
+import processorCode from './my-worklet-processor.js';
 
 export class IatRecorder {
     constructor(opts = {}) {
@@ -64,11 +65,16 @@ export class IatRecorder {
             throw new Error('请正确配置讯飞语音听写服务接口认证信息！');
         }
 
-        // 初始化 Web Worker
-        this.webWorker = new Worker();
-        this.webWorker.onmessage = (event) => {
-            this.audioData.push(...event.data);
-        };
+        try {
+            this.worker = new Worker();
+            this.worker.onmessage = (event) => {
+                // 处理 Web Worker 返回的数据
+                this.audioData.push(...event.data);
+            };
+        } catch (error) {
+            console.error('Web Worker 初始化失败:', error);
+            throw error;
+        }
     }
 
     // 修改录音听写状态
@@ -148,20 +154,43 @@ export class IatRecorder {
         }
 
         // 获取浏览器录音权限成功时回调
-        const getMediaSuccess = () => {
-            this.scriptProcessor = this.audioContext.createScriptProcessor(0, 1, 1);
-            this.scriptProcessor.onaudioprocess = e => {
-                if (this.status === 'ing') {
-                    try {
-                        this.webWorker.postMessage(e.inputBuffer.getChannelData(0));
-                    } catch (error) { }
-                }
-            };
-            
-            this.mediaSource = this.audioContext.createMediaStreamSource(this.streamRef);
-            this.mediaSource.connect(this.scriptProcessor);
-            this.scriptProcessor.connect(this.audioContext.destination);
-            this.connectWebSocket();
+        const getMediaSuccess = async () => {
+            try {
+                // // 1. 在主线程加载你的 AudioWorklet 脚本
+                // await this.audioContext.audioWorklet.addModule('my-worklet-processor.js');
+                // 1.1 将 Worklet 代码包装成 Blob => 转为临时 URL
+                const blob = new Blob([processorCode], { type: 'application/javascript' });
+                const url = URL.createObjectURL(blob);
+
+                // 1.2. 通知 AudioContext 加载模块
+                await this.audioContext.audioWorklet.addModule(url);
+
+                // 2. 创建 AudioWorkletNode 实例，与处理器脚本绑定
+                this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'my-worklet-processor');
+
+                // 3. 监听从处理器脚本发回来的音频数据
+                this.audioWorkletNode.port.onmessage = (event) => {
+                    if (this.status === 'ing') {
+                        try {
+                            this.worker.postMessage(event.data);
+                        } catch (error) {
+                            console.error('处理音频数据失败: ' + error.message);
+                        }
+                    }
+                };
+
+                // 4. 连接输入音源（麦克风音轨）到 AudioWorkletNode
+                this.mediaSource = this.audioContext.createMediaStreamSource(this.streamRef);
+                this.mediaSource.connect(this.audioWorkletNode);
+
+                // 5. 如果不需要在网页上实时播放，则不一定要 connect 到 destination
+                // this.audioWorkletNode.connect(this.audioContext.destination);
+
+                // 6. 连接到 WebSocket
+                this.connectWebSocket();
+            } catch (error) {
+                console.error('AudioWorklet 初始化失败: ', error);
+            }
         };
 
         // 获取浏览器录音权限失败时回调
@@ -171,16 +200,13 @@ export class IatRecorder {
 
         // 获取浏览器录音权限
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({
-                audio: true
-            }).then(stream => {
-                this.streamRef = stream;
-                getMediaSuccess();
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    this.streamRef = stream;
+                    getMediaSuccess();
             }).catch(getMediaFail);
         } else if (navigator.getUserMedia) {
-            navigator.getUserMedia({
-                audio: true
-            }, (stream) => {
+            navigator.getUserMedia({ audio: true }, (stream) => {
                 this.streamRef = stream;
                 getMediaSuccess();
             }, getMediaFail);
@@ -318,9 +344,9 @@ export class IatRecorder {
     // 清理资源
     destroy() {
         this.stop();
-        if (this.webWorker) {
-            this.webWorker.terminate();
-            this.webWorker = null;
+        if (this.worker) {
+            this.worker.terminate();
+            this.worker = null;
         }
         if (this.audioContext) {
             this.audioContext.close();

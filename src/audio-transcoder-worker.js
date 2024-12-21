@@ -44,4 +44,7 @@ if (typeof self !== 'undefined') {
         const result = transAudioData.transcode(e.data);
         self.postMessage(result);
     };
-} 
+}
+
+// 添加默认导出
+export default self; 
