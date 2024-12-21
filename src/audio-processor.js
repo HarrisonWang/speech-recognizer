@@ -1,5 +1,5 @@
 export default `
-class MyWorkletProcessor extends AudioWorkletProcessor {
+class AudioProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
   }
@@ -21,5 +21,5 @@ class MyWorkletProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor("my-worklet-processor", MyWorkletProcessor);
+registerProcessor('audio-processor', AudioProcessor);
 `;

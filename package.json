@@ -1,5 +1,5 @@
 {
-  "name": "@harrisonwang/xunfei-iat",
+  "name": "@harrisonwang/speech-recognizer",
   "version": "2.0.4",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -10,7 +10,10 @@
   },
   "keywords": [
     "科大讯飞",
-    "语音识别库"
+    "语音识别库",
+    "语音识别",
+    "语音转写",
+    "语音转文字"
   ],
   "author": "Harrison Wang",
   "license": "MIT",
