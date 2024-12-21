@@ -14,7 +14,7 @@
 ## 安装
 
 ```bash
-npm i xunfei-iat
+npm i @harrisonwang/speech-recognizer
 ```
 
 ## 使用方法
@@ -22,9 +22,9 @@ npm i xunfei-iat
 ### 基础用法
 
 ```javascript
-import XunfeiIatRecorder from 'xunfei-iat';
+import SpeechRecognizer from '@harrisonwang/speech-recognizer';
 
-const recorder = new XunfeiIatRecorder({
+const recognizer = new SpeechRecognizer({
     // 必填项
     APPID: '您的APPID',
     APISecret: '您的APISecret',
@@ -40,13 +40,13 @@ const recorder = new XunfeiIatRecorder({
 });
 
 // 开始录音识别
-recorder.start();
+recognizer.start();
 
 // 停止录音识别
-recorder.stop();
+recognizer.stop();
 
 // 销毁实例，释放资源
-recorder.destroy();
+recognizer.destroy();
 ```
 
 ## 注意事项
