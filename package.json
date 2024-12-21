@@ -1,6 +1,6 @@
 {
   "name": "xunfei-iat",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "browser": "dist/index.umd.js",
@@ -8,7 +8,10 @@
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": ["科大讯飞", "语音识别库"],
+  "keywords": [
+    "科大讯飞",
+    "语音识别库"
+  ],
   "author": "Harrison Wang",
   "license": "MIT",
   "description": "一个基于科大讯飞语音听写（流式版）WebAPI 的语音识别库，支持实时语音转文字功能。该库提供了 WebSocket 连接和音频处理的完整实现，方便开发者快速集成语音识别功能。",
