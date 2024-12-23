@@ -22,7 +22,7 @@ npm i @harrisonwang/speech-recognizer
 ### 基础用法
 
 ```javascript
-import SpeechRecognizer from '@harrisonwang/speech-recognizer';
+import { SpeechRecognizer } from '@harrisonwang/speech-recognizer';
 
 const recognizer = new SpeechRecognizer({
     // 必填项
