@@ -1,6 +1,6 @@
 {
   "name": "@harrisonwang/speech-recognizer",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "browser": "dist/index.umd.js",
