@@ -23,16 +23,13 @@ jobs:
           node-version: 20
           cache: 'npm'
       
-      - name: Install json tool
-        run: npm install -g json
-      
       - name: Install dependencies
         run: npm ci
       
       - name: Build
         run: npm run build
       
-      # 先发布到 NPM（使用原始的小写包名）
+      # 先发布到 NPM
       - uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -43,17 +40,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      # 然后发布到 GitHub Packages（修改为大写包名）
+      # 发布到 GitHub Packages
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@HarrisonWang'
+          scope: '@harrisonwang'
       
       - name: Publish to GitHub Packages
-        run: |
-          json -I -f package.json -e "this.name='@HarrisonWang/speech-recognizer'"
-          npm publish --registry=https://npm.pkg.github.com
+        run: npm publish --registry=https://npm.pkg.github.com
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
